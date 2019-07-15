@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bai 2</title>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700&display=swap" rel="stylesheet">
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+            font-family:'Quicksand', sans-serif;
+        }
+        body{
+            background:linear-gradient(#D02090,#9400D3);
+            height: auto;
+            min-height: 100vh;
+        }
+        .control{
+            margin-top: 80px;
+        }
+        label{
+            color: #ffffff;
+            display: block;
+            margin-top:10px ;
+        }
+        input{
+            display: block;
+            width: 200px;
+            height: 30px;
+            border-radius: 5px;
+            margin-top:5px;
+            border: 0;
+            padding: 0px 10px;
+            box-sizing: border-box;
+        }
+        button{
+            width: 75px;
+            height: 30px;
+            border-radius: 5px;
+            border: 0;
+            background-color: #FF6347;
+            color: #ffffff;
+            display: block;
+            margin: 20px auto;
+        }
+
+        button:hover{
+            background-color: #FF4500;
+        }
+
+        .grid{
+            display: grid;
+            grid-template-columns: repeat(3, 50px);
+            grid-auto-rows: minmax(50px, auto);
+        }
+        .wrapper{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .item{
+            border: 1px solid #cccccc;
+            background-color: #ffffff;
+            text-align: center;
+            line-height: 50px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .item-header{
+            border: 1px solid #cccccc;
+            background-color: #ffffff;
+            text-align: center;
+            line-height: 50px;
+            font-weight: 500;
+            font-size: 16px;
+            cursor: pointer;
+            color: #666666;
+            box-sizing: border-box;
+            border-radius: 0;
+        }
+
+        .header{
+            display: grid;
+            grid-template-columns: repeat(3, 50px);
+            grid-auto-rows: 50px;
+            position:fixed;
+            top:10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="header">
+            <div data-position="0" class="item-header">1</div>
+            <div data-position="1" class="item-header">2</div>
+            <div data-position="2" class="item-header">3</div>
+        </div>
+        <div class="control">
+            <label for="soluong">Số cột:</label>
+            <input type="number" class="slCot" min="3" value="3"/>
+            <label for="soluong">Số dòng:</label>
+            <input type="number" class="slDong" min="3" value="3"/>
+            <button class="create">Tạo</button>
+        </div>
+        <div class="grid">
+        </div>
+    </div>
+    <script>
+        const cot = document.querySelector(".slCot");
+        const dong = document.querySelector(".slDong");
+        const grid = document.querySelector(".grid");
+        const header = document.querySelector(".header");
+        const create = document.querySelector(".create");
+
+        var n;
+        var div;
+        var mod;
+        var more = 0;
+        var arrResult = [];
+
+        function sortArr(n)
+        {
+            arrResult.sort((a,b)=>a[n]>b[n]?1:-1);
+        }
+
+        function handleClick()
+        {
+            let html = "";
+            sortArr(this.dataset.position);
+            arrResult.forEach(item1 => item1.forEach(item=> html += `<div class="item">${item}</div>`));
+            grid.innerHTML = html;
+        }
+
+
+        function createGrid(m=3,n=3)
+        {   
+            let html = "";
+
+            m = cot.value;
+            n = dong.value;
+            div = Math.floor(n / 100);
+            mod = n % 100;
+            arrResult = [];
+            more = 0;
+            
+
+
+            for(let i=0;i<n;i++)
+            {
+                let itemArr = [];
+                for(let j=0;j<m;j++)
+                {
+                    let value = Math.round(Math.random()*1000);
+                    itemArr.push(value);
+                }
+                arrResult.push(itemArr);
+            }
+
+            if(more<div)
+            {
+                for(let i=0;i<100;i++)
+                {
+                    for(let j=0;j<m;j++)
+                    {
+                        html += `<div class="item">${arrResult[i][j]}</div>`;
+                    }
+                }
+            }
+            else{
+                if(more==div)
+                {
+                    for(let i=0;i<mod;i++)
+                    {
+                        for(let j=0;j<m;j++)
+                        {
+                            html += `<div class="item">${arrResult[i][j]}</div>`;
+                        }
+                    }
+                }
+            }
+
+            grid.innerHTML = html;
+            grid.style = `grid-template-columns: repeat(${m}, 50px)`;
+            // cot hader
+            html = "";
+            for(let i=0;i<m;i++)
+            {
+                html += `<div data-position="${i}" class="item-header">${i+1}</div>`;
+            }
+            header.innerHTML = html;
+            header.style = `grid-template-columns: repeat(${m}, 50px)`;
+
+            //them su kien click
+            const items = document.querySelectorAll(".item-header");
+            items.forEach(item => item.addEventListener("click",handleClick));
+        }
+
+        create.addEventListener("click",createGrid);
+
+        function handleScroll(){
+            m = cot.value;
+            n = dong.value;
+            div = Math.floor(n / 100);
+            mod = n % 100;
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+                more++;
+                if(more<div)
+                {
+                    let html = "";
+                    for(let i=more*100;i<more*100+100;i++)
+                    {
+                        for(let j=0;j<m;j++)
+                        {
+                            html += `<div class="item">${arrResult[i][j]}</div>`;
+                        }
+                    }
+
+                    grid.innerHTML += html;
+                }
+                else{
+                    if(more==div)
+                    {
+                        let html = "";
+                        console.log(arrResult);
+                        for(let i=100;i<150;i++)
+                        {
+                            for(let j=0;j<m;j++)
+                            {
+                                console.log("hello");
+                                html += `<div class="item">${arrResult[i][j]}</div>`;
+                            }
+                        }
+                        grid.innerHTML += html;
+                    }
+                }
+            }
+        }
+        window.addEventListener("scroll",handleScroll);
+    </script>
+</body>
+</html>

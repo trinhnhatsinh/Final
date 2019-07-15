@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bai 1</title>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700&display=swap" rel="stylesheet">
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+            font-family:'Quicksand', sans-serif;
+        }
+        body{
+            background:linear-gradient(#9400D3,#00BFFF);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        label{
+            color: #ffffff;
+            display: block;
+            margin-top:10px ;
+        }
+        input{
+            display: block;
+            width: 200px;
+            height: 30px;
+            border-radius: 5px;
+            margin-top:5px;
+            border: 0;
+            padding: 0px 10px;
+            box-sizing: border-box;
+        }
+        button{
+            width: 75px;
+            height: 30px;
+            border-radius: 5px;
+            border: 0;
+            margin-top:20px;
+            background-color: #FF6347;
+            color: #ffffff;
+        }
+        button:hover{
+            background-color: #FF4500;
+        }
+        button:last-child{
+            background-color:#00CED1;
+        }
+        button:last-child:hover{
+            background-color:#00BFFF;
+        }
+        .caro{
+            display: grid;
+            grid-template-columns: repeat(3, 50px);
+            grid-auto-rows: minmax(50px, auto);
+            margin-left: 15px;
+        }
+        .wrapper{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .item{
+            border: 1px solid #cccccc;
+            background-color: #ffffff;
+            text-align: center;
+            line-height: 50px;
+            font-weight: 700;
+            font-size: 18px;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+        .item:hover{
+            background-color: #E6E6FA;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="control">
+            <label for="soluong">Số lượng bảng</label>
+            <input type="number" class="bang" min="3" value="3"/>
+            <label for="soluong">Số lượng chiến thắng</label>
+            <input type="number" class="soluong" min="3" value="3"/>
+            <button class="start">Bắt đầu</button>
+            <button class="reset">Reset</button>
+        </div>
+        <div class="caro">
+            <div data-position="0" class="item"></div>
+            <div data-position="1" class="item"></div>
+            <div data-position="2" class="item"></div>
+            <div data-position="3" class="item"></div>
+            <div data-position="4" class="item"></div>
+            <div data-position="5" class="item"></div>
+            <div data-position="6" class="item"></div>
+            <div data-position="7" class="item"></div>
+            <div data-position="8" class="item"></div>
+        </div>
+    </div>
+    <script>
+        const start = document.querySelector(".start");
+        const reset = document.querySelector(".reset");
+        const caro = document.querySelector(".caro");
+        var m=3;
+        var n=3;
+        var arrResult = createResult(3);
+        let checkClick = true;
+
+        function createResult(n)
+        {
+            let arr = [];
+            for(let i=0;i<n;i++)
+            {
+                arr.push(Array(n).fill(0));
+            }
+            return arr;
+        }
+
+
+        function startGame()
+        {
+            m = parseInt(document.querySelector(".bang").value);
+            n = parseInt(document.querySelector(".soluong").value);
+            let html="";
+            for(let i=0;i<m*m;i++)
+            {
+                html +=`<div data-position="${i}" class="item"></div>`;
+            }
+            caro.style = `grid-template-columns: repeat(${m}, 50px)`;
+            caro.innerHTML=html;
+
+            const items = document.querySelectorAll(".item");
+            items.forEach(item => item.addEventListener("click",handleClick));
+            arrResult = createResult(5);
+            checkClick = true;
+        }
+
+        start.addEventListener("click",startGame);
+        reset.addEventListener("click",startGame);
+
+        function checkWin(chart1,chart2,n=3,m=3)
+        {
+            let checkDoc = new Set();
+            let checkCheo = {};
+            console.log(arrResult);
+            for(let i=0;i<m;i++)
+            {
+                for(let j=0;j<m;j++)
+                {
+                    if(arrResult[i][j]==chart1)
+                    {
+                        //check hang ngang
+                        let newArr = arrResult[i].slice(j,j+n);
+                        if(newArr.indexOf(chart2)===-1&&newArr.indexOf(0)===-1&&newArr.length===n)
+                        {
+                            return true;
+                        }
+
+                        //check hang doc
+                        if(i+n<=m)
+                        {
+                            let count = 1;
+                            checkDoc.add(arrResult[i][j]);
+                            for(let k=1;k<n;k++)
+                            {
+                                if(checkDoc.has(arrResult[i+k][j]))
+                                {
+                                    count++;
+                                }
+                            }
+                            if(count==n)
+                            {
+                                return true;
+                            }
+                        }
+
+                        // check cheo trai
+                        if(i+n<=m&&j+n<=m)
+                        {
+                            let count = 1;
+                            checkDoc.add(arrResult[i][j]);
+                            for(let k=1;k<n;k++)
+                            {
+                                if(checkDoc.has(arrResult[i+k][j+k]))
+                                {
+                                    count++;
+                                }
+                            }
+                            if(count==n)
+                            {
+                                return true;
+                            }
+                        }
+                        // check cheo phai
+                        if(i+n<=m&&j-n+1>=0)
+                        {
+                            let count = 1;
+                            checkDoc.add(arrResult[i][j]);
+                            for(let k=1;k<n;k++)
+                            {
+                                if(checkDoc.has(arrResult[i+k][j-k]))
+                                {
+                                    count++;
+                                }
+                            }
+                            if(count==n)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+        function handleClick()
+        {
+            if(checkClick===true && this.textContent === "")
+            {
+                this.textContent = "X";
+                let position = this.dataset.position;
+                let div = Math.floor(position/m);
+                let mod = position%m;
+
+                arrResult[div][mod] = "X";
+                if(checkWin("X","O",n,m)){
+                    alert(" X chiến thắng");
+                }
+                checkClick = !checkClick;
+            }
+            if(checkClick===false && this.textContent === "")
+            {
+                this.textContent = "0";
+                let position = this.dataset.position;
+                let div = Math.floor(position / m);
+                let mod = position % m;
+                arrResult[div][mod] = "O";
+                if(checkWin("O","X",n,m))
+                {
+                    alert(" O chiến thắng");
+                }
+                checkClick = !checkClick;
+            }
+        }
+    </script>
+</body>
+</html>
